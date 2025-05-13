@@ -351,6 +351,15 @@
                     curve: 'cardinal'
                 }
             });
+
+            // 추가: mermaid 다이어그램 중앙 정렬을 위한 스타일 추가
+            setTimeout(function() {
+                const mermaidSvgs = document.querySelectorAll(".mermaid svg");
+                mermaidSvgs.forEach(svg => {
+                    svg.style.display = "block";
+                    svg.style.margin = "0 auto";
+                });
+            }, 500);
         });
     </script>
 </body>

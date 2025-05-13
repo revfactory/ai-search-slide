@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아지트 AI 검색 개선 - 품질 관리</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: white;
+            color: #333;
+        }
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+            padding: 40px;
+            overflow: hidden;
+            position: relative;
+        }
+        .headline {
+            position: relative;
+            padding-bottom: 16px;
+            margin-bottom: 30px;
+        }
+        .headline::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #FEE500 70%, transparent 70%);
+        }
+        .title {
+            font-size: 48px;
+            font-weight: 800;
+            color: #000;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .metric-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid #f0f0f0;
+            position: relative;
+            overflow: hidden;
+        }
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.1);
+        }
+        .metric-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: #FEE500;
+        }
+        .metric-value {
+            font-size: 32px;
+            font-weight: 800;
+            margin: 10px 0;
+            color: #000;
+        }
+        .section-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        .content-box {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        .content-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+        }
+        .box-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+        }
+        .title-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #FEE500;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+        .process-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin: 30px 0;
+        }
+        .process-steps::before {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 40px;
+            right: 40px;
+            height: 4px;
+            background-color: #f0f0f0;
+            z-index: 1;
+        }
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            width: 90px;
+        }
+        .step-icon {
+            width: 50px;
+            height: 50px;
+            background-color: #FEE500;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .step-label {
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .comparison-bars {
+            margin: 20px 0;
+        }
+        .bar-container {
+            margin-bottom: 16px;
+        }
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+        .bar-bg {
+            height: 24px;
+            background-color: #f0f0f0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .bar-fill {
+            height: 100%;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            font-weight: 600;
+            color: #7dcf90;
+            transition: width 1s ease;
+        }
+        .cache-info {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            padding: 24px;
+            position: relative;
+        }
+        .cache-status {
+            position: absolute;
+            right: 35px;
+            padding: 6px 12px;
+            background-color: #ffe3e3;
+            color: #e03131;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .reason-list {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .reason-item {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 16px;
+            width: 24%;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .reason-item:hover {
+            background-color: #f0f0f0;
+            transform: translateY(-5px);
+        }
+        .reason-icon {
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        .chart-container {
+            height: 250px;
+            margin-top: 16px;
+        }
+        .tradeoff-card {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        .tradeoff-card:hover {
+            background-color: #FEE50020;
+            transform: translateX(5px);
+        }
+        .tradeoff-icon {
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        .progress-pill {
+            background-color: #f0f0f0;
+            border-radius: 20px;
+            height: 24px;
+            position: relative;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .progress-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            border-radius: 20px;
+            transition: width 1s ease;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .badge-yellow {
+            background-color: #FEE500;
+            color: #000;
+        }
+        .badge-green {
+            background-color: #d3f9d8;
+            color: #2b8a3e;
+        }
+        .badge-red {
+            background-color: #ffe3e3;
+            color: #e03131;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide bg-white">
+        <!-- Header Section -->
+        <div class="headline">
+            <h1 class="title">AI 검색 품질 관리</h1>
+            <p class="text-xl text-gray-600">비용 효율성과 품질의 최적화 지점 도출을 위한 관리 시스템</p>
+        </div>
+        
+        <!-- 핵심 지표 대시보드 -->
+        <div class="dashboard-container">
+            <div class="metric-card">
+                <p class="text-gray-500 text-sm uppercase">현재 품질 점수</p>
+                <div class="metric-value">89.7</div>
+                <div class="flex items-center justify-center">
+                    <span class="text-gray-400 text-sm line-through mr-2">95.6</span>
+                    <span class="badge badge-yellow">
+                        <i class="fas fa-arrow-down mr-1"></i>5.9%
+                    </span>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <p class="text-gray-500 text-sm uppercase">비용 효율성</p>
+                <div class="metric-value">95.5%</div>
+                <div class="flex items-center justify-center">
+                    <span class="text-gray-600 text-sm">비용 절감률</span>
+                    <span class="badge badge-green ml-2">
+                        <i class="fas fa-check mr-1"></i>
+                    </span>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <p class="text-gray-500 text-sm uppercase">응답 속도 개선</p>
+                <div class="metric-value">54.6%</div>
+                <div class="flex items-center justify-center">
+                    <span class="text-gray-400 text-sm line-through mr-2">3,260ms</span>
+                    <span class="text-gray-600 text-sm">1,480ms</span>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <p class="text-gray-500 text-sm uppercase">토큰 사용량</p>
+                <div class="metric-value">-40%</div>
+                <div class="flex items-center justify-center">
+                    <span class="text-gray-400 text-sm line-through mr-2">20,000</span>
+                    <span class="text-gray-600 text-sm">12,000</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 주요 섹션 컨테이너 -->
+        <div class="section-container">
+            <!-- 품질 트레이드오프 섹션 -->
+            <div class="content-box">
+                <div class="box-title">
+                    <div class="title-icon">
+                        <i class="fas fa-balance-scale"></i>
+                    </div>
+                    <span>품질 트레이드오프</span>
+                </div>
+                
+                <p class="text-gray-600 mb-4">비용 효율성과 품질 간의 최적 균형점 도출</p>
+                
+                <!-- 모델별 품질 비교 -->
+                <div class="comparison-bars">
+                    <div class="bar-container">
+                        <div class="bar-label">
+                            <span>GPT-4o</span>
+                            <span class="font-bold">95.6</span>
+                        </div>
+                        <div class="bar-bg">
+                            <div class="bar-fill" style="width: 95.6%; background-color: #343a40;">95.6</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bar-container">
+                        <div class="bar-label">
+                            <span>GPT-4o mini</span>
+                            <span class="font-bold">88.3</span>
+                        </div>
+                        <div class="bar-bg">
+                            <div class="bar-fill" style="width: 88.3%; background-color: #6c757d;">88.3</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bar-container">
+                        <div class="bar-label">
+                            <span>GPT-4o mini + 최적화</span>
+                            <span class="font-bold">89.7</span>
+                        </div>
+                        <div class="bar-bg">
+                            <div class="bar-fill" style="width: 89.7%; background-color: #FEE500;">89.7</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 트레이드오프 요소 카드 -->
+                <div class="tradeoff-card">
+                    <div class="tradeoff-icon">
+                        <i class="fas fa-coins text-yellow-500"></i>
+                    </div>
+                    <div class="flex-grow">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold">비용 효율성</span>
+                            <span class="badge badge-green">+95.5%</span>
+                        </div>
+                        <div class="progress-pill">
+                            <div class="progress-fill" style="width: 95.5%; background-color: #40c057;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tradeoff-card">
+                    <div class="tradeoff-icon">
+                        <i class="fas fa-tachometer-alt text-blue-500"></i>
+                    </div>
+                    <div class="flex-grow">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold">응답 속도</span>
+                            <span class="badge badge-green">+54.6%</span>
+                        </div>
+                        <div class="progress-pill">
+                            <div class="progress-fill" style="width: 54.6%; background-color: #339af0;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tradeoff-card">
+                    <div class="tradeoff-icon">
+                        <i class="fas fa-file-alt text-purple-500"></i>
+                    </div>
+                    <div class="flex-grow">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold">토큰 효율성</span>
+                            <span class="badge badge-green">+40%</span>
+                        </div>
+                        <div class="progress-pill">
+                            <div class="progress-fill" style="width: 40%; background-color: #9775fa;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tradeoff-card">
+                    <div class="tradeoff-icon">
+                        <i class="fas fa-chart-line text-red-500"></i>
+                    </div>
+                    <div class="flex-grow">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold">품질 영향</span>
+                            <span class="badge badge-red">-5.9%</span>
+                        </div>
+                        <div class="progress-pill">
+                            <div class="progress-fill" style="width: 5.9%; background-color: #fa5252;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 품질 관리 프로세스 섹션 -->
+            <div class="content-box">
+                <div class="box-title">
+                    <div class="title-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <span>품질 관리 프로세스</span>
+                </div>
+                
+                <p class="text-gray-600 mb-4">AI 검색 결과의 품질 유지를 위한 자동화된 순환 관리 시스템</p>
+                
+                <!-- 프로세스 단계 -->
+                <div class="process-steps">
+                    <div class="step">
+                        <div class="step-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="step-label">검색 결과 표본</div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="step-label">품질 평가</div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="step-label">문제 분석</div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-icon">
+                            <i class="fas fa-wrench"></i>
+                        </div>
+                        <div class="step-label">최적화 적용</div>
+                    </div>
+                </div>
+                
+                <!-- 품질 분포 차트 -->
+                <div class="chart-container">
+                    <canvas id="qualityDistributionChart"></canvas>
+                </div>
+                
+                <!-- 품질 관리 특징 -->
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div class="bg-gray-50 p-3 rounded-lg flex items-center">
+                        <i class="fas fa-robot text-yellow-500 mr-3"></i>
+                        <span class="font-medium">LLM 품질 평가</span>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-3 rounded-lg flex items-center">
+                        <i class="fas fa-chart-pie text-yellow-500 mr-3"></i>
+                        <span class="font-medium">데이터 기반 의사결정</span>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-3 rounded-lg flex items-center">
+                        <i class="fas fa-sync-alt text-yellow-500 mr-3"></i>
+                        <span class="font-medium">지속적 개선 사이클</span>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-3 rounded-lg flex items-center">
+                        <i class="fas fa-bullseye text-yellow-500 mr-3"></i>
+                        <span class="font-medium">최적 균형점 도출</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- AI 검색 결과 캐싱 섹션 -->
+        <div class="cache-info">
+            <div class="box-title">
+                <div class="title-icon" style="background-color: #ffe3e3;">
+                    <i class="fas fa-database text-red-500"></i>
+                </div>
+                <span>AI 검색 결과 캐싱</span>
+            </div>
+            
+            <p class="text-gray-600 mb-2">사용자별 아지트 검색 및 보안 이슈로 캐싱 기능은 적용하지 않음</p>
+            
+            <div class="reason-list">
+                <div class="reason-item">
+                    <div class="reason-icon">
+                        <i class="fas fa-user-cog text-gray-600"></i>
+                    </div>
+                    <p class="font-medium">사용자별 맞춤형<br>검색 결과 제공</p>
+                </div>
+                
+                <div class="reason-item">
+                    <div class="reason-icon">
+                        <i class="fas fa-shield-alt text-gray-600"></i>
+                    </div>
+                    <p class="font-medium">민감 정보<br>보안 이슈</p>
+                </div>
+                
+                <div class="reason-item">
+                    <div class="reason-icon">
+                        <i class="fas fa-user-lock text-gray-600"></i>
+                    </div>
+                    <p class="font-medium">개인별 권한 기반<br>콘텐츠 접근 제어</p>
+                </div>
+
+                <div class="reason-item">
+                    <div class="cache-status">
+                        <i class="fas fa-times-circle mr-1"></i> 미적용
+                    </div>
+                    <div class="reason-icon">
+                        <i class="fas fa-font-awesome text-gray-600"></i>
+                    </div>
+                    <p class="font-medium">AI 검색 결과<br>캐싱 적용</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 품질 분포 차트
+            const qualityCtx = document.getElementById('qualityDistributionChart').getContext('2d');
+            
+            const qualityChart = new Chart(qualityCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['우수 (90-100)', '양호 (80-89)', '보통 (70-79)', '개선 필요 (<70)'],
+                    datasets: [{
+                        data: [38, 42, 15, 5],
+                        backgroundColor: [
+                            '#40c057',  // 우수 - 녹색
+                            '#FEE500',  // 양호 - 노란색
+                            '#fd7e14',  // 보통 - 주황색
+                            '#fa5252'   // 개선 필요 - 빨간색
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: '검색 결과 품질 분포',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            },
+                            padding: {
+                                bottom: 20
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

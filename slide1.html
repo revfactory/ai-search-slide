@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아지트 AI 검색 개선</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: white;
+            color: #333;
+        }
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+            padding: 40px;
+            overflow: hidden;
+            position: relative;
+        }
+        .headline {
+            position: relative;
+            padding-bottom: 16px;
+            margin-bottom: 30px;
+        }
+        .headline::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #FEE500 70%, transparent 70%);
+        }
+        .title {
+            font-size: 48px;
+            font-weight: 800;
+            color: #000;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+        .highlight-box {
+            background-color: #FEE500;
+            border-radius: 16px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(254, 229, 0, 0.2);
+        }
+        .highlight-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(254, 229, 0, 0.3);
+        }
+        .metric-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            height: 100%;
+            border: 1px solid #f1f1f1;
+        }
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+        .big-number {
+            font-size: 56px;
+            font-weight: 800;
+            line-height: 1;
+            color: #000;
+        }
+        .big-percentage {
+            font-size: 40px;
+            font-weight: 800;
+            color: #000;
+            display: flex;
+            align-items: center;
+            line-height: 1;
+        }
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .comparison-table th {
+            background-color: #F8F9FA;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            color: #000;
+        }
+        .comparison-table thead tr {
+            border-bottom: 2px solid #FEE500;
+        }
+        .comparison-table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #eaeaea;
+        }
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        .comparison-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        .best-value {
+            background-color: rgba(254, 229, 0, 0.15);
+            font-weight: 700;
+            position: relative;
+        }
+        .best-value::after {
+            content: '최적';
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: #FEE500;
+            color: #000;
+            padding: 2px 6px;
+            font-size: 10px;
+            border-bottom-left-radius: 6px;
+        }
+        .metric-icon {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #FEE500;
+            border-radius: 16px;
+            margin-bottom: 15px;
+        }
+        .radar-chart-container {
+            height: 300px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide bg-white">
+        <!-- Header Section -->
+        <div class="headline">
+            <h1 class="title">AI 검색 현황 및 주요 변경 사항</h1>
+            <p class="text-xl text-gray-600">GPT-4o mini로 전환하고 토큰 최적화를 통한 비용 절감 및 성능 개선</p>
+        </div>
+        
+        <!-- 핵심 성과 섹션 -->
+        <div class="highlight-box mb-8">
+            <div class="flex items-center mb-3">
+                <div class="text-3xl mr-3">💰</div>
+                <h2 class="text-2xl font-bold">핵심 성과: 질문 1건당 비용</h2>
+            </div>
+            <div class="grid grid-cols-3 gap-6">
+                <div class="text-center">
+                    <p class="text-lg font-medium mb-2">이전</p>
+                    <div class="big-number text-gray-400">64.5<span class="text-base">원</span></div>
+                    <p class="mt-2 text-sm text-gray-500">GPT-4o</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-lg font-medium mb-2">중간</p>
+                    <div class="big-number text-gray-600">4.5<span class="text-base">원</span></div>
+                    <p class="mt-2 text-sm text-gray-500">GPT-4o mini</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-lg font-medium mb-2">현재</p>
+                    <div class="big-number">2.9<span class="text-base">원</span></div>
+                    <p class="mt-2 text-sm text-gray-500">GPT-4o mini + 최적화</p>
+                </div>
+            </div>
+            <div class="text-center mt-6">
+                <div class="big-percentage justify-center">
+                    <i class="fas fa-arrow-down text-green-600 mr-3"></i> 
+                    <span>95.5%</span>
+                    <span class="text-base ml-2 text-green-600 font-bold">비용 절감</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 주요 변경 사항 카드 -->
+        <div class="grid grid-cols-3 gap-6 mb-8">
+            <div class="metric-card">
+                <div class="metric-icon">
+                    <i class="fas fa-sync-alt text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-3">모델 전환</h3>
+                <p class="text-gray-700 mb-4">GPT-4o mini 모델로 전면 전환 및 운영</p>
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <span class="font-medium">이전</span>
+                    <span class="font-bold">현재</span>
+                </div>
+                <div class="flex justify-between items-center p-3">
+                    <span>GPT-4o</span>
+                    <i class="fas fa-arrow-right text-gray-400"></i>
+                    <span class="font-bold">GPT-4o mini</span>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-icon">
+                    <i class="fas fa-compress-alt text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-3">토큰 최적화</h3>
+                <p class="text-gray-700 mb-4">질문 처리당 토큰 수 대폭 감소</p>
+                <div class="mt-4">
+                    <div class="relative h-16">
+                        <div class="absolute inset-0 bg-gray-200 rounded-full"></div>
+                        <div class="absolute inset-y-0 left-0 bg-green-400 rounded-full" style="width: 60%;"></div>
+                        <div class="absolute inset-0 flex items-center justify-between px-4">
+                            <span class="text-gray-500 line-through">20,000</span>
+                            <span class="font-bold">12,000</span>
+                        </div>
+                    </div>
+                    <div class="text-right mt-2">
+                        <span class="bg-yellow-400 text-black font-bold py-1 px-3 rounded-full text-sm">40% 감소</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-icon">
+                    <i class="fas fa-tachometer-alt text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-3">응답 속도 개선</h3>
+                <p class="text-gray-700 mb-4">Latency (TTFT) 대폭 감소</p>
+                <div class="flex flex-col items-center justify-center h-32">
+                    <div class="flex items-center space-x-4">
+                        <div class="text-center">
+                            <div class="text-lg text-gray-400 line-through">3,260ms</div>
+                            <p class="text-xs text-gray-500">GPT-4o</p>
+                        </div>
+                        <i class="fas fa-arrow-right text-gray-300"></i>
+                        <div class="text-center">
+                            <div class="text-lg">1,480ms</div>
+                            <p class="text-xs text-gray-500">최적화 후</p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <span class="bg-yellow-400 text-black font-bold py-1 px-3 rounded-full text-sm">54.6% 속도 향상</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 성능 비교 섹션 -->
+        <div class="grid grid-cols-2 gap-8">
+            <!-- 레이더 차트 -->
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-xl font-bold mb-4">성능 종합 비교</h3>
+                <div class="radar-chart-container">
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- 테이블 -->
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-xl font-bold mb-4">모델별 상세 성능</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>구분</th>
+                            <th>GPT-4o</th>
+                            <th>GPT-4o mini</th>
+                            <th>GPT-4o mini<br/> + 최적화</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-medium">질문 1건당 평균 비용</td>
+                            <td>64.5원</td>
+                            <td>4.5원</td>
+                            <td class="best-value">2.9원</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">질문 1건당 평균 토큰 수</td>
+                            <td>20,000</td>
+                            <td>20,000</td>
+                            <td class="best-value">12,000</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">Latency (TTFT)</td>
+                            <td>3,260ms</td>
+                            <td>2,150ms</td>
+                            <td class="best-value">1,480ms</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">품질 점수</td>
+                            <td class="font-bold">95.6</td>
+                            <td>88.3</td>
+                            <td class="best-value">89.7</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 레이더 차트
+            const radarCtx = document.getElementById('radarChart').getContext('2d');
+            
+            const radarData = {
+                labels: ['비용 효율성', '응답 속도', '토큰 효율성', '품질'],
+                datasets: [
+                    {
+                        label: 'GPT-4o',
+                        data: [20, 45, 30, 95.6],
+                        backgroundColor: 'rgba(52, 58, 64, 0.2)',
+                        borderColor: 'rgba(52, 58, 64, 0.8)',
+                        pointBackgroundColor: 'rgba(52, 58, 64, 1)',
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'GPT-4o mini',
+                        data: [80, 65, 30, 88.3],
+                        backgroundColor: 'rgba(108, 117, 125, 0.2)',
+                        borderColor: 'rgba(108, 117, 125, 0.8)',
+                        pointBackgroundColor: 'rgba(108, 117, 125, 1)',
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'GPT-4o mini + 최적화',
+                        data: [95, 85, 80, 89.7],
+                        backgroundColor: 'rgba(254, 229, 0, 0.2)',
+                        borderColor: 'rgba(254, 229, 0, 0.8)',
+                        pointBackgroundColor: 'rgba(254, 229, 0, 1)',
+                        borderWidth: 2
+                    }
+                ]
+            };
+            
+            const radarOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: true
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 100,
+                        pointLabels: {
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                size: 12
+                            },
+                            padding: 20
+                        }
+                    }
+                }
+            };
+            
+            new Chart(radarCtx, {
+                type: 'radar',
+                data: radarData,
+                options: radarOptions
+            });
+        });
+    </script>
+</body>
+</html>

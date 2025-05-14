@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>아지트 AI 검색 개선 보고서</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: white;
+            color: #333;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .cover {
+            width: 1280px;
+            min-height: 720px;
+            padding: 60px;
+            position: relative;
+            background-color: white;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .cover::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background-color: #FEE500;
+        }
+        .main-title {
+            font-size: 56px;
+            font-weight: 800;
+            color: #000;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+        .subtitle {
+            font-size: 32px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 40px;
+        }
+        .toc {
+            margin-top: 60px;
+            padding: 30px;
+            background-color: #f8f9fa;
+            border-radius: 16px;
+        }
+        .toc-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .toc-item:hover {
+            transform: translateX(10px);
+        }
+        .toc-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: #FEE500;
+            border-radius: 50%;
+            font-weight: 700;
+            margin-right: 20px;
+        }
+        .toc-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        .footer {
+            font-size: 18px;
+            color: #495057;
+            margin-top: 60px;
+        }
+        .date {
+            font-size: 20px;
+            color: #868e96;
+            margin-bottom: 30px;
+        }
+        .department {
+            font-size: 22px;
+            font-weight: 600;
+            color: #212529;
+            background-color: #FEE500;
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 30px;
+            margin-bottom: 20px;
+        }
+        .logo {
+            position: absolute;
+            top: 40px;
+            right: 60px;
+            font-size: 28px;
+            font-weight: 900;
+            color: #000;
+        }
+        .navigate-links {
+            margin-top: 30px;
+        }
+        .navigate-links a {
+            display: inline-block;
+            margin-right: 15px;
+            padding: 10px 20px;
+            background-color: #FEE500;
+            color: #000;
+            font-weight: 600;
+            border-radius: 30px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .navigate-links a:hover {
+            background-color: #000;
+            color: #FEE500;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="cover">
+        <div class="logo">AI SEARCH</div>
+        
+        <div>
+            <div class="department">AI Native Company TF</div>
+            <h1 class="main-title">아지트 AI 검색 개선 보고서</h1>
+            <h2 class="subtitle">GPT-4o mini로 전환하고 토큰 최적화를 통한 비용 절감 및 성능 개선</h2>
+            <div class="date">2025년 5월 14일</div>
+        </div>
+        
+        <div class="toc">
+            <div class="toc-item">
+                <div class="toc-number">1</div>
+                <div class="toc-title">AI 검색 현황 및 주요 변경 사항</div>
+            </div>
+            <div class="toc-item">
+                <div class="toc-number">2</div>
+                <div class="toc-title">AI 검색 품질 관리</div>
+            </div>
+            <div class="toc-item">
+                <div class="toc-number">3</div>
+                <div class="toc-title">AI 검색 기능 개선 사항</div>
+            </div>
+            <div class="toc-item">
+                <div class="toc-number">4</div>
+                <div class="toc-title">최근 AI 검색 사용 현황</div>
+            </div>
+            <div class="toc-item">
+                <div class="toc-number">5</div>
+                <div class="toc-title">AI 검색 예상 비용</div>
+            </div>
+        </div>
+        
+        <div class="navigate-links">
+            <a href="slide1.html">슬라이드 보기</a>
+            <a href="mailto:ai-search@company.com">문의하기</a>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 AI Native Company TF. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

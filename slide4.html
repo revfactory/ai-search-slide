@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <style>
         body {
@@ -146,7 +147,7 @@
             <div class="metric-box">
                 <p class="text-gray-500 mb-2">실제 사용률</p>
                 <div class="metric-value flex items-center justify-center">
-                    42%
+                    40%
                     <span class="trend-arrow trend-down">
                         <i class="fas fa-arrow-down"></i>
                     </span>
@@ -214,8 +215,8 @@
             <!-- AI Search OFF Issues -->
             <div class="card">
                 <h3 class="text-xl font-bold mb-4">
-                    AI 검색 기능 OFF 이슈
-                    <span class="label label-red">주요 문제점</span>
+                    AI 검색 기능 OFF
+                    <span class="label label-red">개선 필요</span>
                 </h3>
                 
                 <div class="flex items-center mb-6">
@@ -243,7 +244,7 @@
                             </li>
                             <li class="flex items-start">
                                 <i class="fas fa-circle text-xs text-gray-400 mt-1 mr-2"></i>
-                                <span>검색 결과 품질 불만족</span>
+                                <span>AI 검색 결과 품질 불만족</span>
                             </li>
                             <li class="flex items-start">
                                 <i class="fas fa-circle text-xs text-gray-400 mt-1 mr-2"></i>
@@ -264,7 +265,7 @@
                             </li>
                             <li class="flex items-start">
                                 <i class="fas fa-circle text-xs text-yellow-500 mt-1 mr-2"></i>
-                                <span>검색 결과 품질 향상</span>
+                                <span>AI 검색 결과 품질 향상</span>
                             </li>
                             <li class="flex items-start">
                                 <i class="fas fa-circle text-xs text-yellow-500 mt-1 mr-2"></i>
@@ -316,6 +317,8 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Register ChartJS datalabels plugin
+            Chart.register(ChartDataLabels);
             // Usage Chart
             const usageCtx = document.getElementById('usageChart').getContext('2d');
             const usageChart = new Chart(usageCtx, {
@@ -323,8 +326,8 @@
                 data: {
                     labels: ['기존 검색량', '예상 검색량', '실제 검색량', 'AI 검색량'],
                     datasets: [{
-                        label: '검색량 비율 (%)',
-                        data: [100, 125, 120, 42],
+                        label: '검색 평균 (건)',
+                        data: [50000, 75000, 70000, 30000],
                         backgroundColor: [
                             '#4dabf7',
                             '#FEE500',
@@ -340,15 +343,32 @@
                     plugins: {
                         legend: {
                             display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y + '건';
+                                }
+                            }
+                        },
+                        datalabels: {
+                            display: true,
+                            color: '#000',
+                            font: {
+                                weight: 'bold'
+                            },
+                            formatter: function(value) {
+                                return value + '건';
+                            }
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
-                            max: 150,
+                            max: 80000,
                             ticks: {
                                 callback: function(value) {
-                                    return value + '%';
+                                    return value + '건';
                                 }
                             }
                         }
@@ -383,8 +403,8 @@
                     scales: {
                         y: {
                             beginAtZero: false,
-                            min: 30,
-                            max: 80,
+                            min: 0,
+                            max: 100,
                             ticks: {
                                 callback: function(value) {
                                     return value + '%';
@@ -396,5 +416,6 @@
             });
         });
     </script>
+    </div>
 </body>
 </html>

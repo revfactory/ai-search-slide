@@ -181,7 +181,7 @@
                 <div class="chart-container">
                     <canvas id="usageChart"></canvas>
                 </div>
-                <div class="flex justify-center space-x-6 mt-2">
+                <div class="flex justify-center space-x-5 mt-2">
                     <div class="flex items-center">
                         <span class="dot dot-blue"></span>
                         <span>기존 검색량</span>
@@ -191,8 +191,12 @@
                         <span>예상 검색량</span>
                     </div>
                     <div class="flex items-center">
-                        <span class="dot dot-red"></span>
+                        <span class="dot" style="background-color: #36b24a;"></span>
                         <span>실제 검색량</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="dot dot-red"></span>
+                        <span>AI 검색량</span>
                     </div>
                 </div>
                 
@@ -317,13 +321,14 @@
             const usageChart = new Chart(usageCtx, {
                 type: 'bar',
                 data: {
-                    labels: ['기존 검색량', '예상 검색량', '실제 검색량'],
+                    labels: ['기존 검색량', '예상 검색량', '실제 검색량', 'AI 검색량'],
                     datasets: [{
                         label: '검색량 비율 (%)',
-                        data: [100, 125, 42],
+                        data: [100, 125, 120, 42],
                         backgroundColor: [
                             '#4dabf7',
                             '#FEE500',
+                            '#36b24a',
                             '#ff8787'
                         ],
                         borderWidth: 0

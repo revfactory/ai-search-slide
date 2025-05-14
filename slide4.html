@@ -319,6 +319,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Register ChartJS datalabels plugin
             Chart.register(ChartDataLabels);
+
+            const fmt = n => n.toLocaleString('ko-KR');
+
             // Usage Chart
             const usageCtx = document.getElementById('usageChart').getContext('2d');
             const usageChart = new Chart(usageCtx, {
@@ -346,9 +349,7 @@
                         },
                         tooltip: {
                             callbacks: {
-                                label: function(context) {
-                                    return context.parsed.y + '건';
-                                }
+                                label: ctx => `${fmt(ctx.parsed.y)}건`,
                             }
                         },
                         datalabels: {
@@ -357,9 +358,7 @@
                             font: {
                                 weight: 'bold'
                             },
-                            formatter: function(value) {
-                                return value + '건';
-                            }
+                            formatter: v => `${fmt(v)}건`
                         }
                     },
                     scales: {
@@ -367,9 +366,7 @@
                             beginAtZero: true,
                             max: 80000,
                             ticks: {
-                                callback: function(value) {
-                                    return value + '건';
-                                }
+                                callback: v => `${fmt(v)}건`
                             }
                         }
                     }
